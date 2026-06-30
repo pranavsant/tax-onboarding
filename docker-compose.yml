@@ -1,0 +1,27 @@
+version: "3.9"
+
+services:
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    environment:
+      - DATABASE_PATH=/data/tax_onboarding.db
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
+      - ANTHROPIC_MODEL=${ANTHROPIC_MODEL:-claude-3-5-sonnet-20241022}
+      - CORS_ORIGINS=http://localhost:5173
+    volumes:
+      - tax_data:/data
+
+  frontend:
+    build:
+      context: ./frontend
+    ports:
+      - "5173:80"
+    depends_on:
+      - backend
+
+volumes:
+  tax_data:
