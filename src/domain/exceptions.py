@@ -21,3 +21,7 @@ class InvalidClientDataError(DomainError):
 
 class IneligibleForOnboardingError(DomainError):
     """Raised when a client does not meet onboarding requirements."""
+
+
+class UnrecognizedInvestorTypeError(DomainError):
+    """Raised when an investor_type value is not 'us_person' or 'foreign_person'."""

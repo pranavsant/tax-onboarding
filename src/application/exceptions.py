@@ -20,3 +20,7 @@ class InvalidClientRequestError(ApplicationError):
 
 class AIAssistantError(ApplicationError):
     """Raised when the AI tax assistant fails to produce a response."""
+
+
+class UnrecognizedInvestorTypeError(ApplicationError):
+    """Raised when investor_type is missing or does not match a known value."""

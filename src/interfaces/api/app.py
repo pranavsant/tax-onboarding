@@ -13,7 +13,11 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from src.interfaces.api.container import UseCaseContainer
-from src.interfaces.api.controllers import client_controller, tax_assistant_controller
+from src.interfaces.api.controllers import (
+    client_controller,
+    tax_assistant_controller,
+    tax_form_controller,
+)
 
 
 def create_app(container: UseCaseContainer, cors_origins: Optional[List[str]] = None) -> FastAPI:
@@ -35,6 +39,7 @@ def create_app(container: UseCaseContainer, cors_origins: Optional[List[str]] = 
 
     app.include_router(client_controller.router, prefix="/api")
     app.include_router(tax_assistant_controller.router, prefix="/api")
+    app.include_router(tax_form_controller.router, prefix="/api")
 
     @app.get("/health", tags=["health"])
     def health_check() -> dict:

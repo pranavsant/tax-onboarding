@@ -42,3 +42,17 @@ class TaxSummaryResponse(BaseModel):
 
 class ErrorResponse(BaseModel):
     detail: str
+
+
+class DetermineFormRequest(BaseModel):
+    investor_type: str = Field(
+        ...,
+        description="Investor residency type. Accepted values: 'us_person', 'foreign_person'.",
+    )
+
+
+class DetermineFormResponse(BaseModel):
+    investor_type: str
+    required_form: str = Field(
+        ..., description="Required tax form code: 'W-9' (US) or 'W-8BEN' (foreign)."
+    )
