@@ -1,0 +1,13 @@
+{
+  "_comment": "Sample W-9 (Request for Taxpayer Identification Number and Certification) JSON payload. Mirrors the field set a PDF extractor would produce from a completed W-9 form.",
+  "name": "Jane A. Doe",
+  "federal_tax_classification": "Individual/sole proprietor or single-member LLC",
+  "address": "123 Main Street, Apt 4B",
+  "city_state_zip": "Springfield, IL 62701",
+  "tin": "123-45-6789",
+  "tin_type": "SSN",
+  "business_name": null,
+  "exempt_payee_code": null,
+  "exemption_from_fatca_code": null,
+  "account_numbers": null
+}

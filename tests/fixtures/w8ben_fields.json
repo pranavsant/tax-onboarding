@@ -1,0 +1,19 @@
+{
+  "_comment": "Sample W-8BEN (Certificate of Foreign Status of Beneficial Owner for United States Tax Withholding and Reporting) JSON payload. Mirrors the field set a PDF extractor would produce from a completed W-8BEN form.",
+  "name": "Carlos M. Rodrigues",
+  "country_of_citizenship": "Brazil",
+  "permanent_address": "Rua das Flores, 42",
+  "permanent_address_city_country": "São Paulo, SP, Brazil",
+  "mailing_address": null,
+  "mailing_address_city_country": null,
+  "us_tin": null,
+  "foreign_tin": "123.456.789-00",
+  "ftin_not_required": null,
+  "reference_numbers": null,
+  "date_of_birth": "1985-07-15",
+  "treaty_country": "Brazil",
+  "treaty_article": "Article 21",
+  "withholding_rate": "15%",
+  "income_type": "Dividends",
+  "treaty_conditions": "The beneficial owner is a resident of Brazil within the meaning of the income tax convention between Brazil and the United States."
+}

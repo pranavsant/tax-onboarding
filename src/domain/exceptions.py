@@ -25,3 +25,7 @@ class IneligibleForOnboardingError(DomainError):
 
 class UnrecognizedInvestorTypeError(DomainError):
     """Raised when an investor_type value is not 'us_person' or 'foreign_person'."""
+
+
+class InvalidFormFieldsError(DomainError):
+    """Raised when submitted form fields fail domain-level validation."""

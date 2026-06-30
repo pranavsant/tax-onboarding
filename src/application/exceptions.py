@@ -24,3 +24,8 @@ class AIAssistantError(ApplicationError):
 
 class UnrecognizedInvestorTypeError(ApplicationError):
     """Raised when investor_type is missing or does not match a known value."""
+
+
+class InvalidFormFieldsError(ApplicationError):
+    """Raised when a submitted form field payload is missing required fields
+    or contains values that fail domain-level validation."""
