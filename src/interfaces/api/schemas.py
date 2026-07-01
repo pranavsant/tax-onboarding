@@ -191,6 +191,8 @@ class ParsedFormFieldsResponse(BaseModel):
     exempt_payee_code: Optional[str] = None
     exemption_from_fatca_code: Optional[str] = None
     account_numbers: Optional[str] = None
+    signature_present: Optional[bool] = None
+    signature_date: Optional[str] = None
 
     # W-8BEN fields
     country_of_citizenship: Optional[str] = None

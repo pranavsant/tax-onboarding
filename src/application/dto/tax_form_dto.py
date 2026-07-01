@@ -193,6 +193,17 @@ class ParsedFormFieldsDTO:
     exemption_from_fatca_code: Optional[str] = None
     account_numbers: Optional[str] = None
 
+    # ---- W-9 signature fields -----------------------------------------------
+    # These are extracted by the Claude-based extractor and are not part of
+    # the structured JSON input path (they exist only in a scanned/submitted
+    # document).
+    # True if the form contains a visible signature, False if blank, None if
+    # the extractor could not determine.
+    signature_present: Optional[bool] = None
+    # Date the form was signed, in ISO 8601 format (YYYY-MM-DD) when
+    # legible, or None if absent / illegible.
+    signature_date: Optional[str] = None
+
     # ---- W-8BEN-specific fields ---------------------------------------------
     country_of_citizenship: Optional[str] = None
     permanent_address: Optional[str] = None

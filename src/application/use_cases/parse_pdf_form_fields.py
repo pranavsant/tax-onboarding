@@ -13,7 +13,7 @@ layer never needs to import domain types directly.
 """
 from __future__ import annotations
 
-from src.application.dto.tax_form_dto import ParsedFormFieldsDTO, W8BENFieldsDTO, W9FieldsDTO
+from src.application.dto.tax_form_dto import ParsedFormFieldsDTO, W8BENFieldsDTO
 from src.application.exceptions import TaxFormExtractionError
 from src.application.ports.tax_form_extractor import TaxFormExtractorPort
 from src.application.use_cases.normalize_form_fields import NormalizeFormFieldsUseCase
@@ -80,22 +80,37 @@ class ParsePdfFormFieldsUseCase:
     # ---------------------------------------------------------------- helpers
 
     def _normalize_w9(self, raw: dict) -> ParsedFormFieldsDTO:
-        """Build a W9FieldsDTO from *raw* and normalize it."""
-        dto = W9FieldsDTO(
-            name=raw.get("name", ""),
-            federal_tax_classification=raw.get("federal_tax_classification", ""),
-            address=raw.get("address", ""),
-            city_state_zip=raw.get("city_state_zip", ""),
-            tin=raw.get("tin", ""),
-            tin_type=raw.get("tin_type", ""),
-            business_name=raw.get("business_name"),
-            exempt_payee_code=raw.get("exempt_payee_code"),
-            exemption_from_fatca_code=raw.get("exemption_from_fatca_code"),
-            account_numbers=raw.get("account_numbers"),
+        """Build a ``ParsedFormFieldsDTO`` from *raw* W-9 extractor output.
+
+        PDF extractors (including AI-based ones) may legitimately return
+        ``None`` for fields that are missing or illegible — the task spec
+        explicitly requires that such fields be flagged ``null`` rather than
+        causing a failure.  Therefore this method builds ``ParsedFormFieldsDTO``
+        directly from the raw dict **without** running domain validation.
+
+        Domain validation (which enforces that required fields are non-null) is
+        reserved for the *structured JSON input path* where a human or upstream
+        system is expected to supply complete data.
+        """
+        # tin_type normalization: upper-case when present, pass None through.
+        raw_tin_type: str | None = raw.get("tin_type")
+        tin_type = raw_tin_type.strip().upper() if raw_tin_type else None
+
+        return ParsedFormFieldsDTO(
+            form_type="W-9",
+            name=raw.get("name") or None,
+            federal_tax_classification=raw.get("federal_tax_classification") or None,
+            address=raw.get("address") or None,
+            city_state_zip=raw.get("city_state_zip") or None,
+            tin=raw.get("tin") or None,
+            tin_type=tin_type,
+            business_name=raw.get("business_name") or None,
+            exempt_payee_code=raw.get("exempt_payee_code") or None,
+            exemption_from_fatca_code=raw.get("exemption_from_fatca_code") or None,
+            account_numbers=raw.get("account_numbers") or None,
+            signature_present=raw.get("signature_present"),
+            signature_date=raw.get("signature_date") or None,
         )
-        # NormalizeFormFieldsUseCase already translates domain errors to
-        # application errors, so we can call it directly.
-        return self._normalizer.execute_w9(dto)
 
     def _normalize_w8ben(self, raw: dict) -> ParsedFormFieldsDTO:
         """Build a W8BENFieldsDTO from *raw* and normalize it."""

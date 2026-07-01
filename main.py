@@ -25,7 +25,7 @@ from src.infrastructure.config import get_settings
 from src.infrastructure.db.database import init_db
 from src.infrastructure.db.sqlite_client_repository import SqliteClientRepository
 from src.infrastructure.llm.claude_tax_assistant import ClaudeTaxAssistant
-from src.infrastructure.pdf.stub_pdf_extractor import StubPdfExtractor
+from src.infrastructure.pdf.claude_w9_extractor import ClaudeW9Extractor
 from src.interfaces.api.app import create_app
 from src.interfaces.api.container import UseCaseContainer
 
@@ -34,7 +34,7 @@ init_db()
 
 client_repository = SqliteClientRepository()
 ai_assistant = ClaudeTaxAssistant()
-pdf_extractor = StubPdfExtractor()
+pdf_extractor = ClaudeW9Extractor()
 
 container = UseCaseContainer(
     onboard_client=OnboardClientUseCase(client_repository),

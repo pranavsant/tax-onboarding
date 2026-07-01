@@ -1,0 +1,16 @@
+{
+  "_comment": "W-9 fixture for James Whitfield — a sole-proprietor US taxpayer. Used to verify the Claude W-9 extractor and the full PDF extraction pipeline against a named case.",
+  "form_type": "W-9",
+  "name": "James Whitfield",
+  "business_name": null,
+  "federal_tax_classification": "Individual/sole proprietor or single-member LLC",
+  "exempt_payee_code": null,
+  "exemption_from_fatca_code": null,
+  "address": "4821 Elmwood Drive",
+  "city_state_zip": "Austin, TX 78701",
+  "account_numbers": null,
+  "tin": "512-74-9301",
+  "tin_type": "SSN",
+  "signature_present": true,
+  "signature_date": "2024-03-15"
+}
