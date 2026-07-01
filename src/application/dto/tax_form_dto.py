@@ -90,6 +90,30 @@ class TINValidationResultDTO:
 
 
 @dataclass
+class TreatyClaimValidationResultDTO:
+    """Result returned by
+    :class:`~src.application.use_cases.validate_treaty_claim.ValidateTreatyClaimUseCase`.
+
+    Attributes:
+        passed: ``True`` when the Part II treaty claim is consistent with the
+            investor's country of citizenship; ``False`` when Part II is
+            unexpectedly blank for a treaty country and should be flagged for
+            review.
+        reason: Human-readable explanation of the outcome.  Empty string when
+            ``passed`` is ``True``.
+        applied_withholding_rate_pct: The applicable US withholding rate as a
+            percentage when a valid treaty claim is present (e.g. ``15.0`` for
+            15 %).  ``None`` when the claim is absent or the country has no
+            treaty (statutory 30 % applies but is not echoed here to avoid
+            implying a successful claim was made).
+    """
+
+    passed: bool
+    reason: str
+    applied_withholding_rate_pct: Optional[float] = None
+
+
+@dataclass
 class DetermineFormDTO:
     """Input DTO carrying the raw investor_type string from the caller."""
 
