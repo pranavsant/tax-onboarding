@@ -1,0 +1,22 @@
+{
+  "_comment": "W-8BEN fixture for Mariana Costa Ribeiro — a foreign individual (Brazil) claiming a US-Brazil tax treaty benefit on dividend income. Used to verify the Claude W-8BEN extractor and the full PDF extraction pipeline against a named case.",
+  "form_type": "W-8BEN",
+  "name": "Mariana Costa Ribeiro",
+  "country_of_citizenship": "Brazil",
+  "permanent_address": "Avenida Paulista, 1578, Apto 42",
+  "permanent_address_city_country": "São Paulo, SP, Brazil",
+  "mailing_address": null,
+  "mailing_address_city_country": null,
+  "us_tin": null,
+  "foreign_tin": "987.654.321-00",
+  "ftin_not_required": null,
+  "reference_numbers": null,
+  "date_of_birth": "1990-04-22",
+  "treaty_country": "Brazil",
+  "treaty_article": "Article 11",
+  "withholding_rate": "15%",
+  "income_type": "Dividends",
+  "treaty_conditions": "The beneficial owner is a resident of Brazil within the meaning of the income tax convention between Brazil and the United States.",
+  "signature_present": true,
+  "signature_date": "2024-06-10"
+}

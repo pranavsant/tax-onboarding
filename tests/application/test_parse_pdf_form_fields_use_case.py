@@ -5,8 +5,8 @@ Verifies that:
 - Missing form_type raises TaxFormExtractionError
 - Unknown form_type raises TaxFormExtractionError
 - Extraction failure propagates as TaxFormExtractionError
-- Missing required W-8BEN fields are surfaced as InvalidFormFieldsError
 - Missing/illegible W-9 fields from PDF extraction are returned as None (lenient path)
+- Missing/illegible W-8BEN fields from PDF extraction are returned as None (lenient path)
 - The fixture JSON files round-trip successfully through the use case
 """
 from __future__ import annotations
@@ -19,7 +19,7 @@ from unittest.mock import MagicMock
 import pytest
 
 from src.application.dto.tax_form_dto import ParsedFormFieldsDTO
-from src.application.exceptions import InvalidFormFieldsError, TaxFormExtractionError
+from src.application.exceptions import TaxFormExtractionError
 from src.application.ports.tax_form_extractor import TaxFormExtractorPort
 from src.application.use_cases.parse_pdf_form_fields import ParsePdfFormFieldsUseCase
 from src.infrastructure.pdf.stub_pdf_extractor import StubPdfExtractor
@@ -187,17 +187,23 @@ class TestParsePdfFormFieldsUseCaseErrors:
         result = use_case.execute(b"ignored", "w9.pdf")
         assert result.name is None
 
-    def test_missing_required_w8ben_field_raises_invalid_form_fields_error(self) -> None:
+    def test_missing_required_w8ben_field_returns_none_not_error(self) -> None:
+        # The PDF extraction path is intentionally lenient for W-8BEN too:
+        # a missing or blank name is returned as None rather than raising
+        # InvalidFormFieldsError.  Domain validation for required fields only
+        # applies to the structured JSON input path.
         fields = {**_W8BEN_FIELDS, "name": ""}
         use_case, _ = _stub_use_case(fields)
-        with pytest.raises(InvalidFormFieldsError):
-            use_case.execute(b"ignored", "w8ben.pdf")
+        result = use_case.execute(b"ignored", "w8ben.pdf")
+        assert result.name is None
 
-    def test_w8ben_no_identification_raises_invalid_form_fields_error(self) -> None:
+    def test_w8ben_missing_foreign_tin_returns_none_not_error(self) -> None:
+        # A W-8BEN where foreign_tin is absent/illegible should NOT raise —
+        # the extractor flags it null per the "null-over-failure" contract.
         fields = {k: v for k, v in _W8BEN_FIELDS.items() if k != "foreign_tin"}
         use_case, _ = _stub_use_case(fields)
-        with pytest.raises(InvalidFormFieldsError):
-            use_case.execute(b"ignored", "w8ben.pdf")
+        result = use_case.execute(b"ignored", "w8ben.pdf")
+        assert result.foreign_tin is None
 
 
 # ---------------------------------------------------------------------------
