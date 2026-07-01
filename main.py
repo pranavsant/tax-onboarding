@@ -20,10 +20,12 @@ from src.application.use_cases.generate_tax_summary import GenerateTaxSummaryUse
 from src.application.use_cases.get_client import GetClientUseCase
 from src.application.use_cases.list_clients import ListClientsUseCase
 from src.application.use_cases.onboard_client import OnboardClientUseCase
+from src.application.use_cases.parse_pdf_form_fields import ParsePdfFormFieldsUseCase
 from src.infrastructure.config import get_settings
 from src.infrastructure.db.database import init_db
 from src.infrastructure.db.sqlite_client_repository import SqliteClientRepository
 from src.infrastructure.llm.claude_tax_assistant import ClaudeTaxAssistant
+from src.infrastructure.pdf.stub_pdf_extractor import StubPdfExtractor
 from src.interfaces.api.app import create_app
 from src.interfaces.api.container import UseCaseContainer
 
@@ -32,6 +34,7 @@ init_db()
 
 client_repository = SqliteClientRepository()
 ai_assistant = ClaudeTaxAssistant()
+pdf_extractor = StubPdfExtractor()
 
 container = UseCaseContainer(
     onboard_client=OnboardClientUseCase(client_repository),
@@ -39,6 +42,7 @@ container = UseCaseContainer(
     get_client=GetClientUseCase(client_repository),
     add_document=AddClientDocumentUseCase(client_repository),
     generate_tax_summary=GenerateTaxSummaryUseCase(client_repository, ai_assistant),
+    parse_pdf_form_fields=ParsePdfFormFieldsUseCase(pdf_extractor),
 )
 
 app = create_app(container, cors_origins=settings.cors_origins)

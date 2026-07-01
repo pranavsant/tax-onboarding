@@ -2,6 +2,59 @@
 
 DTOs are the only objects that cross the application/interfaces
 boundary — domain types never leak outward.
+
+Normalized Intermediate Representation — ``ParsedFormFieldsDTO``
+----------------------------------------------------------------
+Both the **JSON input path** and the **PDF extraction path** converge
+on a single ``ParsedFormFieldsDTO`` instance so that all downstream
+validation logic is form-source-agnostic.
+
+Field groups
+~~~~~~~~~~~~
+
+``form_type`` (required)
+    ``"W-9"`` or ``"W-8BEN"``.  Determines which subset of fields is
+    populated.
+
+Shared fields (populated for **both** form types)
+    * ``name`` — individual or entity name
+
+W-9 — populated when ``form_type == "W-9"``
+    * ``federal_tax_classification`` — IRS box 3 classification
+    * ``address``                    — street address (box 5)
+    * ``city_state_zip``             — city, state, ZIP (box 6)
+    * ``tin``                        — taxpayer identification number
+    * ``tin_type``                   — ``"SSN"`` or ``"EIN"``
+    * ``business_name``              — box 2, optional
+    * ``exempt_payee_code``          — box 4, optional
+    * ``exemption_from_fatca_code``  — box 4, optional
+    * ``account_numbers``            — box 7, optional
+
+W-8BEN — populated when ``form_type == "W-8BEN"``
+    * ``country_of_citizenship``          — line 2, required
+    * ``permanent_address``               — line 3 street, required
+    * ``permanent_address_city_country``  — line 3 city/country, required
+    * ``mailing_address``                 — line 4, optional
+    * ``mailing_address_city_country``    — line 4, optional
+    * ``us_tin``                          — line 5, optional
+    * ``foreign_tin``                     — line 6a, optional
+    * ``ftin_not_required``               — line 6b flag, optional
+    * ``reference_numbers``               — line 7, optional
+    * ``date_of_birth``                   — line 8 (YYYY-MM-DD), optional
+    * ``treaty_country``                  — line 9, optional
+    * ``treaty_article``                  — line 10, optional
+    * ``withholding_rate``                — line 10, optional
+    * ``income_type``                     — line 10, optional
+    * ``treaty_conditions``               — line 10, optional
+
+Fields not applicable to a given form type are ``None``.
+
+Producers
+~~~~~~~~~
+* :class:`~src.application.use_cases.normalize_form_fields.NormalizeFormFieldsUseCase`
+  (JSON input path)
+* :class:`~src.application.use_cases.parse_pdf_form_fields.ParsePdfFormFieldsUseCase`
+  (PDF extraction path)
 """
 from __future__ import annotations
 

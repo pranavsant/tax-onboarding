@@ -29,3 +29,8 @@ class UnrecognizedInvestorTypeError(ApplicationError):
 class InvalidFormFieldsError(ApplicationError):
     """Raised when a submitted form field payload is missing required fields
     or contains values that fail domain-level validation."""
+
+
+class TaxFormExtractionError(ApplicationError):
+    """Raised when a PDF extractor cannot parse the uploaded file or cannot
+    determine the tax form type from its contents."""

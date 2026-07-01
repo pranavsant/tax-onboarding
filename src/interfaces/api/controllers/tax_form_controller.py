@@ -5,14 +5,18 @@ Business rules are never evaluated here.
 """
 from __future__ import annotations
 
-from fastapi import APIRouter, HTTPException, status
+from fastapi import APIRouter, HTTPException, Request, UploadFile, status
 
 from src.application.dto.tax_form_dto import (
     DetermineFormDTO,
     W8BENFieldsDTO,
     W9FieldsDTO,
 )
-from src.application.exceptions import InvalidFormFieldsError, UnrecognizedInvestorTypeError
+from src.application.exceptions import (
+    InvalidFormFieldsError,
+    TaxFormExtractionError,
+    UnrecognizedInvestorTypeError,
+)
 from src.application.use_cases.determine_required_form import DetermineRequiredFormUseCase
 from src.application.use_cases.normalize_form_fields import NormalizeFormFieldsUseCase
 from src.interfaces.api.schemas import (
@@ -120,6 +124,39 @@ def parse_w8ben_fields(payload: W8BENFieldsRequest) -> ParsedFormFieldsResponse:
                 treaty_conditions=payload.treaty_conditions,
             )
         )
+    except InvalidFormFieldsError as exc:
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail=str(exc)
+        ) from exc
+    return ParsedFormFieldsResponse(**result.__dict__)
+
+
+@router.post(
+    "/parse-pdf",
+    response_model=ParsedFormFieldsResponse,
+    status_code=status.HTTP_200_OK,
+    summary="Extract and normalize tax form fields from a PDF upload",
+    description=(
+        "Accepts a multipart file upload containing a tax form PDF (W-9 or W-8BEN) "
+        "and returns the same normalized intermediate representation produced by the "
+        "JSON input path.  The concrete extractor implementation is injected at "
+        "startup; the default stub accepts JSON-encoded bytes for testing. "
+        "Raises 422 if required fields are absent or the form type is unrecognised. "
+        "Raises 400 if the file cannot be parsed at all."
+    ),
+)
+async def parse_pdf_form_fields(
+    request: Request,
+    file: UploadFile,
+) -> ParsedFormFieldsResponse:
+    parse_pdf_use_case = request.app.state.container.parse_pdf_form_fields
+    file_bytes = await file.read()
+    try:
+        result = parse_pdf_use_case.execute(file_bytes, file.filename or "")
+    except TaxFormExtractionError as exc:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST, detail=str(exc)
+        ) from exc
     except InvalidFormFieldsError as exc:
         raise HTTPException(
             status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail=str(exc)

@@ -14,6 +14,7 @@ from src.application.use_cases.generate_tax_summary import GenerateTaxSummaryUse
 from src.application.use_cases.get_client import GetClientUseCase
 from src.application.use_cases.list_clients import ListClientsUseCase
 from src.application.use_cases.onboard_client import OnboardClientUseCase
+from src.application.use_cases.parse_pdf_form_fields import ParsePdfFormFieldsUseCase
 
 
 @dataclass(frozen=True)
@@ -23,3 +24,4 @@ class UseCaseContainer:
     get_client: GetClientUseCase
     add_document: AddClientDocumentUseCase
     generate_tax_summary: GenerateTaxSummaryUseCase
+    parse_pdf_form_fields: ParsePdfFormFieldsUseCase
