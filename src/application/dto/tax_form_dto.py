@@ -135,6 +135,40 @@ class TreatyClaimValidationResultDTO:
 
 
 @dataclass
+class MismatchDetailDTO:
+    """Describes a single field mismatch between a submitted form and a stored profile.
+
+    Attributes:
+        field: The name of the field that differs (e.g. ``"name"`` or ``"address"``).
+        profile_value: The value currently stored in the investor profile.
+        submitted_value: The value supplied on the submitted form.
+        reason: Human-readable description of the mismatch.
+    """
+
+    field: str
+    profile_value: str
+    submitted_value: str
+    reason: str
+
+
+@dataclass
+class ProfileMismatchResultDTO:
+    """Result returned by
+    :class:`~src.application.use_cases.detect_profile_mismatch.DetectProfileMismatchUseCase`.
+
+    Attributes:
+        has_mismatches: ``True`` when at least one field differs between the
+            submitted form and the stored investor profile; ``False`` when all
+            compared fields match exactly.
+        mismatches: List of :class:`MismatchDetailDTO` instances, one per
+            differing field.  Empty list when ``has_mismatches`` is ``False``.
+    """
+
+    has_mismatches: bool
+    mismatches: list  # list[MismatchDetailDTO]
+
+
+@dataclass
 class DetermineFormDTO:
     """Input DTO carrying the raw investor_type string from the caller."""
 
