@@ -59,7 +59,10 @@ Producers
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import Optional
+from typing import TYPE_CHECKING, Optional
+
+if TYPE_CHECKING:
+    from src.application.dto.tax_profile_dto import ProfileStatus
 
 
 @dataclass
@@ -166,6 +169,25 @@ class ProfileMismatchResultDTO:
 
     has_mismatches: bool
     mismatches: list  # list[MismatchDetailDTO]
+
+
+@dataclass
+class StatusDeterminationResultDTO:
+    """Result returned by
+    :class:`~src.application.use_cases.determine_status.DetermineStatusUseCase`.
+
+    Attributes:
+        status: The overall readiness of the tax profile expressed as a
+            :class:`~src.application.dto.tax_profile_dto.ProfileStatus` enum
+            value (``READY``, ``REVIEW_REQUIRED``, or ``INCOMPLETE``).
+        status_reason: Human-readable explanation of the status.  Empty string
+            when ``status`` is ``READY``; a pipe-delimited (``" | "``)
+            concatenation of all individual failure reasons when
+            ``REVIEW_REQUIRED`` or ``INCOMPLETE``.
+    """
+
+    status: "ProfileStatus"  # forward-reference to avoid circular import
+    status_reason: str
 
 
 @dataclass

@@ -69,6 +69,7 @@ from src.application.dto.tax_profile_dto import (
     TreatyStatusDTO,
 )
 from src.domain.entities.investor_profile import InvestorProfile
+from src.domain.services.status_determinator import StatusDeterminator
 from src.domain.services.tax_form_determination_service import InvestorType, TaxFormCode
 from src.domain.services.treaty_table import TreatyTable
 
@@ -381,43 +382,24 @@ class TaxProfileAssembler:
     ) -> tuple[ProfileStatus, str]:
         """Return ``(ProfileStatus, status_reason)`` for the assembled profile.
 
+        Delegates entirely to
+        :class:`~src.domain.services.status_determinator.StatusDeterminator`
+        so that all status-determination logic lives in a single, independently
+        testable domain service.
+
         Priority (highest → lowest):
-        1. ``INCOMPLETE`` — no form has been submitted.
+        1. ``INCOMPLETE`` — no form has been submitted (``form_on_file is None``).
         2. ``REVIEW_REQUIRED`` — at least one validation check failed.
         3. ``READY`` — all supplied checks passed.
         """
-        # 1. No form on file → INCOMPLETE.
-        if form_on_file is None:
-            required_form = (
-                "W-9" if profile.investor_type == InvestorType.US_PERSON else "W-8BEN"
-            )
-            return (
-                ProfileStatus.INCOMPLETE,
-                f"No {required_form} on file. Investor must submit Form {required_form} "
-                "before onboarding can be completed.",
-            )
-
-        # 2. Collect failure reasons from all validation results.
-        issues: list[str] = []
-
-        if signature_result is not None and not signature_result.passed:
-            issues.append(signature_result.reason)
-
-        if tin_result is not None and not tin_result.passed:
-            issues.append(tin_result.reason)
-
-        if expiration_result is not None and not expiration_result.passed:
-            issues.append(expiration_result.reason)
-
-        if treaty_claim_result is not None and not treaty_claim_result.passed:
-            issues.append(treaty_claim_result.reason)
-
-        if mismatch_result is not None and mismatch_result.has_mismatches:
-            for mismatch in mismatch_result.mismatches:
-                issues.append(mismatch.reason)
-
-        if issues:
-            return ProfileStatus.REVIEW_REQUIRED, " | ".join(issues)
-
-        # 3. All checks passed → READY.
-        return ProfileStatus.READY, ""
+        is_us_person = profile.investor_type == InvestorType.US_PERSON
+        result = StatusDeterminator.determine(
+            form_submitted=form_on_file is not None,
+            is_us_person=is_us_person,
+            signature_result=signature_result,
+            tin_result=tin_result,
+            expiration_result=expiration_result,
+            treaty_claim_result=treaty_claim_result,
+            mismatch_result=mismatch_result,
+        )
+        return result.status, result.status_reason
