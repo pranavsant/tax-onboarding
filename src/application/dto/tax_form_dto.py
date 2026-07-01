@@ -76,6 +76,20 @@ class SignatureValidationResultDTO:
 
 
 @dataclass
+class TINValidationResultDTO:
+    """Result returned by :class:`~src.application.use_cases.validate_tin.ValidateTINUseCase`.
+
+    ``passed`` is ``True`` when the TIN supplied on the form satisfies the
+    format rules for its form type; ``False`` otherwise.  ``reason`` is a
+    human-readable explanation of why validation failed (empty string when
+    ``passed`` is ``True``).
+    """
+
+    passed: bool
+    reason: str
+
+
+@dataclass
 class DetermineFormDTO:
     """Input DTO carrying the raw investor_type string from the caller."""
 
