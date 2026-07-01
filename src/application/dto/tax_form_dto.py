@@ -63,6 +63,19 @@ from typing import Optional
 
 
 @dataclass
+class SignatureValidationResultDTO:
+    """Result returned by :class:`~src.application.use_cases.validate_signature.ValidateSignatureUseCase`.
+
+    ``passed`` is ``True`` when the form carries both a visible signature and a
+    well-formed signed date; ``False`` otherwise.  ``reason`` is a human-readable
+    explanation of why validation failed (empty string when ``passed`` is ``True``).
+    """
+
+    passed: bool
+    reason: str
+
+
+@dataclass
 class DetermineFormDTO:
     """Input DTO carrying the raw investor_type string from the caller."""
 
@@ -193,7 +206,7 @@ class ParsedFormFieldsDTO:
     exemption_from_fatca_code: Optional[str] = None
     account_numbers: Optional[str] = None
 
-    # ---- W-9 signature fields -----------------------------------------------
+    # ---- signature fields (W-9 and W-8BEN) ---------------------------------
     # These are extracted by the Claude-based extractor and are not part of
     # the structured JSON input path (they exist only in a scanned/submitted
     # document).
