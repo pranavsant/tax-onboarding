@@ -90,6 +90,27 @@ class TINValidationResultDTO:
 
 
 @dataclass
+class ExpirationValidationResultDTO:
+    """Result returned by
+    :class:`~src.application.use_cases.validate_expiration.ValidateExpirationUseCase`.
+
+    Attributes:
+        passed: ``True`` when the form has not yet expired as of today;
+            ``False`` when it has expired or the signed date could not be
+            parsed.
+        reason: Human-readable explanation of why validation failed.
+            Empty string when ``passed`` is ``True``.
+        valid_through: The computed expiry date in ``YYYY-MM-DD`` format
+            (always ``YYYY-12-31``), or ``None`` when the signed date could
+            not be parsed.
+    """
+
+    passed: bool
+    reason: str
+    valid_through: Optional[str] = None
+
+
+@dataclass
 class TreatyClaimValidationResultDTO:
     """Result returned by
     :class:`~src.application.use_cases.validate_treaty_claim.ValidateTreatyClaimUseCase`.
